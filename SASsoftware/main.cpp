@@ -1,3 +1,11 @@
+/*
+       Squishy sampler project, the Surface Augmented Sampler approach.
+       See main.cpp for more information.
+       
+       Some sections of the code are adapted from
+       Jonathan Goodman's code main.cpp
+
+*/
 //
 //  3D Warped Torus model
 //

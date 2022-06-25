@@ -1,6 +1,9 @@
 //
 //  3D Simple Torus model
 //
+//
+//  Adapted by Brando Magnani from Jonathan Goodman's code
+//
 //  main.cpp
 //
 #include <iostream>
