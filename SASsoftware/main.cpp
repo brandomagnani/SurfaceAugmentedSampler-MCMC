@@ -10,6 +10,7 @@
 //
 //  main.cpp
 //
+#include <cstdio>
 #include <iostream>
 #include <fstream>                // write the output to a file
 #include <blaze/Math.h>
@@ -82,7 +83,7 @@ int main(int argc, char** argv){
 
 
 
-   size_t T      = 20000000;     // number of MCMC steps
+   size_t T      = 2000000;     // number of MCMC steps
    double neps   = 1.e-10;       // convergence tolerance for Newton projection
    double rrc    = 1.e-8;        // closeness criterion for the reverse check
    int itm       = 6;            // maximum number of Newtons iterations
@@ -255,7 +256,7 @@ int main(int argc, char** argv){
             x1 = L + dx*bin + .5*dx;
             Z = ( (double) Nxb[bin]) / ( (double) Ns*dx*fl[bin]);
             Ratio[bin] = Z;
-            StringLength = sprintf( OutputString, " %4d   %8.3f   %8d   %9.3e    %9.3e", bin, x1, Nxb[bin], fl[bin], Z);
+            StringLength = snprintf( OutputString, sizeof(OutputString)," %4d   %8.3f   %8d   %9.3e    %9.3e", bin, x1, Nxb[bin], fl[bin], Z);
             cout << OutputString << endl;
          }
       }
@@ -268,53 +269,53 @@ int main(int argc, char** argv){
    ofstream OutputFile ( "ChainOutput.py");
    OutputFile << "# data output file from an MCMC code\n" << endl;
    OutputFile << "import numpy as np" << endl;
-   StringLength = sprintf( OutputString, "eps = %10.5e", eps);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"eps = %10.5e", eps);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "kt = %10.5e", kt);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"kt = %10.5e", kt);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "kon = %10.5e", kon);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"kon = %10.5e", kon);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "kn = %10.5e", kn);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"kn = %10.5e", kn);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "ks = %10.5e", ks);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"ks = %10.5e", ks);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "kc = %10.5e", kc);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"kc = %10.5e", kc);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "ss = %10.5e", ss);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"ss = %10.5e", ss);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "sh = %10.5e", sh);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"sh = %10.5e", sh);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "sn = %10.5e", sn);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"sn = %10.5e", sn);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "st = %10.5e", st);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"st = %10.5e", st);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "son = %10.5e", son);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"son = %10.5e", son);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "p_h = %10.5e", p_hard);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"p_h = %10.5e", p_hard);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "p_s = %10.5e", p_soft);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"p_s = %10.5e", p_soft);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "T = %10d", (int)T);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"T = %10d", (int)T);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Th = %10d", (int)Th);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Th = %10d", (int)Th);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Toff = %10d", (int)Toff);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Toff = %10d", (int)Toff);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Ts = %10d", (int)Ts);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Ts = %10d", (int)Ts);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Ton = %10d", (int)Ton);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Ton = %10d", (int)Ton);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Ah = %6.3f", Ah);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Ah = %6.3f", Ah);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Aoff = %6.3f", Aoff);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Aoff = %6.3f", Aoff);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "As = %6.3f", As);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"As = %6.3f", As);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Aon = %6.3f", Aon);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Aon = %6.3f", Aon);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "Ns = %10d", Ns);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"Ns = %10d", Ns);
    OutputFile << OutputString << endl;
-   StringLength = sprintf( OutputString, "d = %10d", d);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"d = %10d", d);
    OutputFile << OutputString << endl;
    OutputFile << "ModelName = \"" << M.ModelName() << "\"" << endl;
    OutputFile.close();
@@ -322,11 +323,11 @@ int main(int argc, char** argv){
 /*
    OutputFile << "\n" << endl;
    OutputFile << "# X contains Soft Samples + Accepted Off samples, used for analysis\n" << endl;
-   StringLength = sprintf( OutputString, "X = np.ndarray([%5d,%5d], dtype=np.float64)", (int)Ns, d);
+   StringLength = snprintf( OutputString, sizeof(OutputString),"X = np.ndarray([%5d,%5d], dtype=np.float64)", (int)Ns, d);
    OutputFile << OutputString << endl;
    for ( int iter = 0; iter < Ns; iter++){
       for (int k = 0; k < d; k++){
-         StringLength = sprintf( OutputString, "X[%5d,%5d] = %10.5e", iter, k, Schain[ k + d*iter]);
+         StringLength = snprintf( OutputString, sizeof(OutputString),"X[%5d,%5d] = %10.5e", iter, k, Schain[ k + d*iter]);
          OutputFile << OutputString << endl;
        }
     }
