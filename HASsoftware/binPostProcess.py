@@ -8,18 +8,19 @@ import acor
 import ChainOutput
 import time
 
+# performance of post-processing improved by reading the MCMC output from a binary file
 
-Schain_test     = True
+chain_test      = True
 thetas_test     = True
 
 start = time.time()
-# read Schain from binary file, cast it to vector called X
+# read chain from binary file, cast it to vector called X
 dtype = np.dtype('float64')
 try:
-   with open("Schain.bin", "rb") as f:
+   with open("chain.bin", "rb") as f:
       X = np.fromfile(f,dtype)
 except IOError:
-   Schain_test = False
+   chain_test = False
    
    
 # read thetas from binary file, cast it to vector called theta
@@ -40,9 +41,9 @@ X = np.reshape(X, (Ns,d))
 end = time.time()
 
 print("---------------------------------------------------")
-OutputLine = " Schain has " + str(Ns) + " rows and " + str(d) + " columns "
+OutputLine = " chain has " + str(Ns) + " rows and " + str(d) + " columns "
 print(OutputLine)
-print(" Time to read Schain from binary =  %.4f seconds" %(end-start))
+print(" Time to read chain from binary =  %.4f seconds" %(end-start))
 eps = ChainOutput.eps
 beta = 1.0 / (2.0*eps*eps)
 ac  = acor.acov(X[:,0])
@@ -53,7 +54,7 @@ print("---------------------------------------------------")
 np1 = 5*int(tau)
 
 #-------------------------------Plot of Autocovaroiance-------------------------
-if (Schain_test==True):
+if (chain_test==True):
    fig, ax = plt.subplots()
    ax.plot(range(np1), ac[0:np1], 'bo', label = 'auto-covariance')
    ax.set_ylabel('covariance')
@@ -69,22 +70,14 @@ if (Schain_test==True):
 
    runInfo = r"$\beta=\frac{1}{2\varepsilon^2}=%.1f$" % (beta) + ", "
    runInfo = runInfo + r"$\varepsilon=%.3f$" % (ChainOutput.eps) + "\n"
-   runInfo = runInfo + r"$p_{h}=%.2f$" % (ChainOutput.p_h) + ", "
-   runInfo = runInfo + r"$p_{s}=%.2f$" % (ChainOutput.p_s) + "\n"
-   runInfo = runInfo + r"$s_h=%.2f$" % (ChainOutput.sh) + ", "
+   runInfo = runInfo + r"$N_{soft}=%d$" % (ChainOutput.Nsoft) + ", "
+   runInfo = runInfo + r"$N_{rattle}=%d$" % (ChainOutput.Nrattle) + "\n"
    runInfo = runInfo + r"$s_s=%.2f$" % (ChainOutput.ks) + r"$\varepsilon$" + ", "
-   runInfo = runInfo + r"$s_c=%.2f$" % (ChainOutput.kc) + r"$\varepsilon$" + "\n"
-   runInfo = runInfo + r"$s_{on}=%.2f$" % (ChainOutput.kon) + r"$\varepsilon$" + ", "
-   runInfo = runInfo + r"$s_{t}=%.2f$" % (ChainOutput.kt) + r"$\varepsilon$" + ", "
-   runInfo = runInfo + r"$s_{n}=%.2f$" % (ChainOutput.kn) + r"$\varepsilon$" + "\n"
-   #runInfo = runInfo + r"$s_{on}=s_n=s_t=%.2f$" % (ChainOutput.k) + r"$\varepsilon$" + "\n"
    runInfo = runInfo + r"$T=%d$" % (ChainOutput.T) + "\n"
    runInfo = runInfo + r"$N_s=%d$" % (Ns) + ", "
    runInfo = runInfo + r"$\frac{N_s}{T}=%.2f$" % (float(Ns)/float(ChainOutput.T)) + "\n"
-   runInfo = runInfo + r"$A_h=%.3f$" % (ChainOutput.Ah) + ", "
-   runInfo = runInfo + r"$A_{off}=%.3f$" % (ChainOutput.Aoff) + "\n"
    runInfo = runInfo + r"$A_s=%.3f$" % (ChainOutput.As) + ", "
-   runInfo = runInfo + r"$A_{on}=%.3f$" % (ChainOutput.Aon)
+   runInfo = runInfo + r"$A_r=%.3f$" % (ChainOutput.Ar)
 
    # these are matplotlib.patch.Patch properties
    props = dict(boxstyle='round', facecolor='white', alpha=0.8)
@@ -96,8 +89,6 @@ if (Schain_test==True):
 
    plt.savefig('AutoCovariance.pdf')
    #plt.show()
-
-
 
 
 #-------------------------------Theta histogram-----------------------------
@@ -116,10 +107,6 @@ if (thetas_test==True):
    ax.tick_params(axis='both', which='minor', labelsize=15)
 
    plt.savefig('ThetaCount.pdf')
-
-
-
-
 
 
 

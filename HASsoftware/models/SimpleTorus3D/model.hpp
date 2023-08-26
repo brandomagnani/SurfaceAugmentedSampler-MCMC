@@ -3,12 +3,12 @@
 //
 //  model name: 3D simple torus
 //
-//  Adapted by Brando Magnani from Jonathan Goodman's code
+//  Adapted from Jonathan Goodman's foliation sampler code
 //
 /*   This model has a surface in d dimensions defined by m constraints
      of the form
           
-            | x - c_k | = r_k
+            | q - c_k | = r_k
             
      Geomertically, the surface is the intersection of m spheres
 */
@@ -31,14 +31,14 @@ class Model{
       int n;     // dimension of the hard constraint manifold = d-m
       
       DynamicVector<double, columnVector>            /* return the values ...           */
-      q( DynamicVector<double, columnVector> x);     /* ... of the constraint functions */
+      xi( DynamicVector<double, columnVector> q);     /* ... of the constraint functions */
       
       DynamicMatrix<double, columnMajor>             /* column k is the gradient ...*/
-      gq( DynamicVector<double, columnVector> x);    /* ... of q_k(x)               */
+      gxi( DynamicVector<double, columnVector> q);    /* ... of xi_k(x)               */
    
-      // Returns gq(x) augmented to a square matrix (in case d > m), just appends columns of zeros.
+      // Returns gxi(q) augmented to a square matrix (in case d > m), just appends columns of zeros.
       DynamicMatrix<double, columnMajor>
-      Agq(DynamicMatrix<double, columnMajor> gq);
+      Agxi(DynamicMatrix<double, columnMajor> gxi);
    
       // DEFAULT Constructor
       Model();
