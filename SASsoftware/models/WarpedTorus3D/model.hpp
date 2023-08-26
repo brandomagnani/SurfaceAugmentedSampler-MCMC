@@ -3,17 +3,17 @@
 //
 //  model name: 3D warped torus
 //
-//  Adapted from Jonathan Goodman's foliation sampler code.
+//  Adapted by Brando Magnani from Jonathan Goodman's code.
 //
 /*   This model defines a warped circle in 3D as the intersection
      of two surfaces.  One is a round sphere defined by
           
-            | q - c_0 | = r_0
+            | x - c_0 | = r_0
     
      The other surface is an ellipsoid, which is a distorted sphere,
      defined by
      
-          sum_k ( q_k - c_{1,k} )^2/s_k^2 = 1
+          sum_k ( x_k - c_{1,k} )^2/s_k^2 = 1
      
 */
 
@@ -37,14 +37,14 @@ class Model{
       int n;     // dimension of the hard constraint manifold = d-m
       
       DynamicVector<double, columnVector>            /* return the values ...           */
-      xi( DynamicVector<double, columnVector> q);     /* ... of the constraint functions */
+      q( DynamicVector<double, columnVector> x);     /* ... of the constraint functions */
       
       DynamicMatrix<double, columnMajor>             /* column k is the gradient ...*/
-      gxi( DynamicVector<double, columnVector> q);    /* ... of xi_k(q)               */
+      gq( DynamicVector<double, columnVector> x);    /* ... of q_k(x)               */
    
-      // Returns gxi(q) augmented to a square matrix (in case d > m), just appends columns of zeros.
+      // Returns gq(x) augmented to a square matrix (in case d > m), just appends columns of zeros.
       DynamicMatrix<double, columnMajor>
-      Agxi(DynamicMatrix<double, columnMajor> gxi);
+      Agq(DynamicMatrix<double, columnMajor> gq);
    
       // DEFAULT Constructor
       Model();
@@ -63,7 +63,7 @@ class Model{
       double yzIntegrate( double x,        /* Integrate e^{-beta*U(x,y,z)} over y and z */
                           double L,        /* Integrate from y = L to y = R    */
                           double R,        /* Integrate z over the same range  */
-                          double eps,      /* The temperature parameter*/
+                          double eps,     /* The temperature parameter*/
                           int n);          /* the number of integration points in each dir */
 
 };

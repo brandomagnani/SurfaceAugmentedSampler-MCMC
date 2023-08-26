@@ -2,12 +2,12 @@
 //
 //   model name: 3D simple torus
 
-//   Adapted from Jonathan Goodman's foliation sampler code
+//   Adapted by Brando Magnani from Jonathan Goodman's code
 
 /*   This model has a surface in d dimensions defined by m constraints
      of the form
           
-            | q - c_k | = r_k
+            | x - c_k | = r_k
             
      Geomertically, the surface is the intersection of m spheres
 */
@@ -40,38 +40,38 @@ Model::Model(const Model& M0){
 }
 
 DynamicVector<double, columnVector>
-Model::xi(DynamicVector<double, columnVector> q){
-   DynamicVector<double, columnVector> disp(d);   // vector from q to c_j (center of sphere j)
-   DynamicVector<double, columnVector> xi(m);      // constraint function values
+Model::q(DynamicVector<double, columnVector> x){
+   DynamicVector<double, columnVector> disp(d);   // vector from x to c_j (center of sphere j)
+   DynamicVector<double, columnVector> q(m);      // constraint function values
    for (int j = 0; j < m; j++){
       
-      disp = q - column(c,j);
-      xi[j] = trans(disp)*disp - r[j]*r[j];
+      disp = x - column(c,j);
+      q[j] = trans(disp)*disp - r[j]*r[j];
     }
-   return xi;
+   return q;
 }
 
 DynamicMatrix<double, columnMajor>
-Model::gxi(DynamicVector<double, columnVector> q){
+Model::gq(DynamicVector<double, columnVector> x){
    DynamicVector<double, columnVector>disp(d);   // displacement from a center
-   DynamicMatrix<double, columnMajor> gxi(d,m);   // gradient, (dxm) matrix
+   DynamicMatrix<double, columnMajor> gq(d,m);   // gradient, (dxm) matrix
    for (int j = 0; j < m; j++){
-      disp = q - column(c,j);
-      column(gxi, j)  = 2.*disp;
+      disp = x - column(c,j);
+      column(gq, j)  = 2.*disp;
     }
-   return gxi;
+   return gq;
 }
 
-// Returns gxi(q) augmented to a square matrix (in case d > m), last n=d-m columns are just zeros.
-// Needed to have a complete QR decomposition of gxi(q), with Q (dxd) matrix
+// Returns gq(x) augmented to a square matrix (in case d > m), last n=d-m columns are just zeros.
+// Needed to have a complete QR decomposition of gq(x), with Q (dxd) matrix
 DynamicMatrix<double, columnMajor>
-Model::Agxi(DynamicMatrix<double, columnMajor> gxi){
-   DynamicMatrix<double, columnMajor> Agxi(d,d);   // Augmented gradient, (dxd) matrix
-   Agxi = 0.;  // initialize to zero
+Model::Agq(DynamicMatrix<double, columnMajor> gq){
+   DynamicMatrix<double, columnMajor> Agq(d,d);   // Augmented gradient, (dxd) matrix
+   Agq = 0.;  // initialize to zero
    for (int j = 0; j < m; j++){
-      column(Agxi, j)  = column(gxi, j);
+      column(Agq, j)  = column(gq, j);
    }
-   return Agxi;  // last n=d-m columns are zeros
+   return Agq;  // last n=d-m columns are zeros
 }
 
 string Model::ModelName(){                  /* Return the name of the model */
@@ -91,18 +91,18 @@ double Model::yzIntegrate( double x, double L, double R, double eps, int n){
    double y, z;
    double sum = 0.;
    
-   DynamicVector<double, columnVector> qv( 3);    // point in 3D
-   DynamicVector<double, columnVector> xiv( 2);    // values of the constraint functions
+   DynamicVector<double, columnVector> xv( 3);    // point in 3D
+   DynamicVector<double, columnVector> qv( 2);    // values of the constraint functions
    
-   qv[0] = x;
+   xv[0] = x;
    for ( int j = 0; j < n; j++){
       y = L + j*dy + .5*dy;
-      qv[1] = y;
+      xv[1] = y;
       for ( int k = 0; k < n; k++) {
          z = L + k*dz + .5*dz;
-         qv[2] = z;
-         xiv = xi(qv);
-         sum += exp( - 0.5*(trans(xiv)*xiv)/(eps*eps) );
+         xv[2] = z;
+         qv = q(xv);
+         sum += exp( - 0.5*(trans(qv)*qv)/(eps*eps) );
       }
    }
    return dy*dz*sum;

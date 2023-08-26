@@ -3,17 +3,17 @@
 //
 //  model name: 3D warped torus
 //
-//  Adapted from Jonathan Goodman's foliation sampler code.
+//  Adapted by Brando Magnani from Jonathan Goodman's code.
 //
 /*   This model defines a warped circle in 3D as the intersection
      of two surfaces.  One is a round sphere defined by
           
-            | q - c_0 | = r_0
+            | x - c_0 | = r_0
     
      The other surface is an ellipsoid, which is a distorted sphere,
      defined by
      
-          sum_k ( q_k - c_{1,k} )^2/s_k^2 = 1
+          sum_k ( x_k - c_{1,k} )^2/s_k^2 = 1
      
 */
 #include <iostream>
@@ -56,62 +56,62 @@ Model::Model(const Model& M0){
 }
 
 DynamicVector<double, columnVector>
-Model::xi(DynamicVector<double, columnVector> q){
+Model::q(DynamicVector<double, columnVector> x){
    
-   DynamicVector<double, columnVector> disp(d);   // vector from q to c_j (center of sphere j)
-   DynamicVector<double, columnVector> xi(m);      // constraint function values
+   DynamicVector<double, columnVector> disp(d);   // vector from x to c_j (center of sphere j)
+   DynamicVector<double, columnVector> q(m);      // constraint function values
    
    //        The sphere
      
-   disp = q - column(c,0);
-   xi[0] = trans(disp)*disp - r*r;
+   disp = x - column(c,0);
+   q[0] = trans(disp)*disp - r*r;
    
    //       The ellipsoid
 
-   double exi = 0.;              // xi[1] = exi = xi "for the ellipsoid"
-   disp = q - column(c,1);
+   double eq = 0.;              // q[1] = eq = q "for the ellipsoid'
+   disp = x - column(c,1);
    for ( int j =0; j < d; j++){
-      exi += disp[j]*disp[j]/ssq[j];
+      eq += disp[j]*disp[j]/ssq[j];
    }
-   xi[1] = exi - 1.;
+   q[1] = eq - 1.;
    
-   return xi;
+   return q;
 }
 
 DynamicMatrix<double, columnMajor>
-Model::gxi(DynamicVector<double, columnVector> q){
+Model::gq(DynamicVector<double, columnVector> x){
    
    DynamicVector<double, columnVector>disp(d);   // displacement from a center
-   DynamicMatrix<double, columnMajor> gxi(d,m);  // gradient, (dxm) matrix
+   DynamicMatrix<double, columnMajor> gq(d,m);   // gradient, (dxm) matrix
    
    //        The sphere, first column
      
-   disp = q - column(c,0);
-   column(gxi, 0)  = 2.*disp;
+   disp = x - column(c,0);
+   column(gq, 0)  = 2.*disp;
    
    //       The ellipsoid, second column
 
-   disp = q - column(c,1);
+   disp = x - column(c,1);
    for ( int j =0; j < d; j++){
-      gxi(j,1) = 2.0*disp[j]/ssq[j];
+      gq(j,1) = 2.0*disp[j]/ssq[j];
    }
    
-   return gxi;
+   return gq;
 }
 
-// Returns gxi(q) augmented to a square matrix (in case d > m), last n=d-m columns are just zeros.
-// Needed to have a complete QR decomposition of gxi(q), with Q (dxd) matrix
+// Returns gq(x) augmented to a square matrix (in case d > m), last n=d-m columns are just zeros.
+// Needed to have a complete QR decomposition of gq(x), with Q (dxd) matrix
 DynamicMatrix<double, columnMajor>
-Model::Agxi(DynamicMatrix<double, columnMajor> gxi){
+Model::Agq(DynamicMatrix<double, columnMajor> gq){
    
-   DynamicMatrix<double, columnMajor> Agxi(d,d);   // Augmented gradient, (dxd) matrix
-   Agxi = 0.;  // initialize to zero
+   DynamicMatrix<double, columnMajor> Agq(d,d);   // Augmented gradient, (dxd) matrix
+   Agq = 0.;  // initialize to zero
    
    for (int j = 0; j < m; j++){
-      column(Agxi, j)  = column(gxi, j);
+      column(Agq, j)  = column(gq, j);
    }
 
-   return Agxi;  // last n=d-m columns are zeros
+   return Agq;  // last n=d-m columns are zeros
 }
 
 string Model::ModelName(){                  /* Return the name of the model */
@@ -119,7 +119,7 @@ string Model::ModelName(){                  /* Return the name of the model */
    return(" 3D Warped Torus ");
 }
 
-//  Compute the (un-normalized) probability density for q1 by integrating over
+//  Compute the (un-normalized) probability density for x1 by integrating over
 //  the other two variables.
  
 double Model::yzIntegrate( double x, double L, double R, double eps, int n){
@@ -131,18 +131,18 @@ double Model::yzIntegrate( double x, double L, double R, double eps, int n){
    double y, z;
    double sum = 0.;
    
-   DynamicVector<double, columnVector> qv( 3);    // point in 3D
-   DynamicVector<double, columnVector> xiv( 2);    // values of the constraint functions
+   DynamicVector<double, columnVector> xv( 3);    // point in 3D
+   DynamicVector<double, columnVector> qv( 2);    // values of the constraint functions
    
-   qv[0] = x;
+   xv[0] = x;
    for ( int j = 0; j < n; j++){
       y = L + j*dy + .5*dy;
-      qv[1] = y;
+      xv[1] = y;
       for ( int k = 0; k < n; k++) {
          z = L + k*dz + .5*dz;
-         qv[2] = z;
-         xiv = xi(qv);
-         sum += exp( - 0.5*(trans(xiv)*xiv)/(eps*eps) );
+         xv[2] = z;
+         qv = q(xv);
+         sum += exp( - 0.5*(trans(qv)*qv)/(eps*eps) );
       }
    }
    return dy*dz*sum;
